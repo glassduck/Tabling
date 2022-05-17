@@ -7,13 +7,14 @@
 - [체크포인트](#체크포인트)
 - [분석/설계](#분석설계)
 - [구현:](#구현)
-  - [Gateway 설정]
+  - [API Gateway]
   - [동기식 호출]
+- [운영](#운영)
   - [오토 스케일링]
   - [셀프 힐링]
   - [무정지 배포]
   - [Config 및 PV 설정]
-- [운영](#운영)
+
 
 
 # 서비스 시나리오
@@ -41,7 +42,7 @@
 <img width="1582" alt="Screen Shot 2022-05-17 at 11 07 09 AM" src="https://user-images.githubusercontent.com/55871108/168713780-c3f5bab3-64f7-4e8e-b961-910da5f69433.png">
 
 # 구현
-### Gateway
+### API Gateway
 원하는 서비스에 알맞게 할당될 수 있도록 포트를 분배
 > application.yml
 ```
@@ -84,7 +85,15 @@ public interface SeatService {
     };
 ```
 
+# 운영
+
 ### Auto Scaling
+요청이 많아질 경우에 대비하여 pod의 다음과 같은 명령어로 auto Scaling을 설정할 필요가 있다.
+평균 CPU의 사용률이 50%가 넘을 경우, 최대 5개까지 pod가 늘어날 수 있도록 설정 가정.
+```
+kubectl autoscale deployment Recept --cpu-percent=50 --min=3 --max=5
+```
+
 
 ### Self-Healing(Liveness Probe)
 
@@ -142,6 +151,3 @@ spec:
     persistentVolumeClaim:
       claimName: "fs"
 ```
-
-# 운영
-
