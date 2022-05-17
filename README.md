@@ -48,45 +48,57 @@
 
 # 구현
 ### API Gateway
-원하는 서비스에 알맞게 할당될 수 있도록 포트를 분배
+원하는 서비스로 할당될 수 있도록 포트를 분배
 > application.yml
 ```
 spring:
-  profiles: default
+  profiles: docker
   cloud:
     gateway:
       routes:
         - id: Management
-          uri: http://localhost:8081
+          uri: http://Management:8080
           predicates:
             - Path=/orderMngs/** 
         - id: Recept
-          uri: http://localhost:8082
+          uri: http://Recept:8080
           predicates:
             - Path=/recepts/** 
         - id: Seat
-          uri: http://localhost:8083
+          uri: http://Seat:8080
           predicates:
             - Path=/seats/** 
         - id: ReceptDashBoard
-          uri: http://localhost:8084
+          uri: http://ReceptDashBoard:8080
           predicates:
             - Path= 
         - id: frontend
-          uri: http://localhost:8080
+          uri: http://frontend:8080
           predicates:
             - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
 ```
 
 ### FeignClient
 
-checkSeat 부분은 위 앱의 핵심적인 기능으로서 조건 충족 여부에 따라 external 서비스인 카카오톡 메시지 서비스 작동 유무를 결정해야 함으로 Sync로 호출하기로 결정.
+checkSeat 함수는 조건 충족 여부에 따라 external 서비스인 카카오톡 메시지 서비스 작동 유무를 결정해야 함으로 Sync로 호출하기로 결정.
 ```
 @FeignClient(name="Seat", url="http://Seat:8080")
 public interface SeatService {
     @RequestMapping(method= RequestMethod.GET, path="/seats")
-    public void checkSeat(@RequestBody Seat seat);{
-    // 서비스 로직
+    public void checkSeat(@RequestBody Seat seat){
     };
 ```
 
