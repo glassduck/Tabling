@@ -10,9 +10,11 @@
   - [API Gateway]
   - [동기식 호출]
 - [운영](#운영)
+  - [배포 환경] 
   - [오토 스케일링]
   - [셀프 힐링]
   - [무정지 배포]
+  - [서킷 브레이커]
   - [Config 및 PV 설정]
 
 
@@ -28,17 +30,20 @@
 # 체크포인트
 - [X] 이벤트 스토밍
 - [X] 구현
-  - [X] Gateway
+  - [X] API Gateway
   - [X] 동기식 호출
+- [X] 운영
+  - [X] Deploy / Pipeline
   - [X] Auto Scaling
   - [X] Self-healing
-  - [X] Self-healing
   - [X] Zero-Downtime Deploy
+  - [X] Circuit Breaker
   - [X] Config Map / Persistence Volume
 
 # 분석설계
 ### 이벤트 스토밍
 위 서비스 시나리오를 바탕으로 각각의 서비스에 대한 Event를 정의하고 그에 맞는 Context Bound를 설정한 결과는 다음과 같다.
+> https://labs.msaez.io/#/storming/L7nJ7pBSliOBshobfs3yyHumFxt1/7cd3db84e30aca9f2c8de0acfb7fab9b
 <img width="1582" alt="Screen Shot 2022-05-17 at 11 07 09 AM" src="https://user-images.githubusercontent.com/55871108/168713780-c3f5bab3-64f7-4e8e-b961-910da5f69433.png">
 
 # 구현
@@ -87,6 +92,18 @@ public interface SeatService {
 
 # 운영
 
+### Deploy / Pipeline
+
+github /aws 환경에서 배포되는형태.
+소스코드를 패키징 하고, 패키징된 파일을 도커리이징 한다. Docker Hub에 올라간 이미지를 클러스터에 배포
+
+```
+docker login
+ docker build -t true4you/tabbling:20220517     
+ docker images
+ docker push true4you/tabbling:20220517
+ ```
+
 ### Auto Scaling
 요청이 많아질 경우에 대비하여 pod의 다음과 같은 명령어로 auto Scaling을 설정할 필요가 있다.
 평균 CPU의 사용률이 50%가 넘을 경우, 최대 5개까지 pod가 늘어날 수 있도록 설정 가정.
@@ -125,6 +142,28 @@ readinessProbe:
   periodSeconds: 5
   failureThreshold: 10
 ```
+
+### Circuit Breaker
+isto에서 설정을통한 서킷브레이커.
+Istio 의 DestinationRule 설정을 통한 서킷브레이커의 다양한 설정 방식을 이해하여 앞서의 타임아웃과는 차별화된 장애회피 전략을 설정.
+```
+kubectl apply -f - << EOF
+  apiVersion: networking.istio.io/v1alpha3
+  kind: DestinationRule
+  metadata:
+    name: dr-delivery
+    namespace: tutorial
+  spec:
+    host: delivery
+    trafficPolicy:
+      outlierDetection:
+        consecutive5xxErrors: 1
+        interval: 1s
+        baseEjectionTime: 3m
+        maxEjectionPercent: 100
+EOF
+```
+
 ### Config Map / Persistence Volume
 쿠버네이트에서 mairadb 가 초기화 되지 않고 연속성이 구현 되지 위한 설정과 구현
 #### Config Map
