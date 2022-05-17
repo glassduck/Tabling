@@ -42,13 +42,13 @@
 
 # 분석설계
 ### 이벤트 스토밍
-위 서비스 시나리오를 바탕으로 각각의 서비스에 대한 Event를 정의하고 그에 맞는 Context Bound를 설정한 결과는 다음과 같다.
+위 서비스 시나리오를 바탕으로 각각의 서비스에 대한 Event를 정의하고 그에 맞는 Bounded Context를 설정한 결과는 다음과 같다.
 > https://labs.msaez.io/#/storming/L7nJ7pBSliOBshobfs3yyHumFxt1/7cd3db84e30aca9f2c8de0acfb7fab9b
 <img width="1582" alt="Screen Shot 2022-05-17 at 11 07 09 AM" src="https://user-images.githubusercontent.com/55871108/168713780-c3f5bab3-64f7-4e8e-b961-910da5f69433.png">
 
 # 구현
 ### API Gateway
-원하는 서비스로 할당될 수 있도록 포트를 분배
+원하는 서비스로 할당될 수 있도록 Gateway 설정.
 > application.yml
 ```
 spring:
