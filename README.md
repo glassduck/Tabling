@@ -6,11 +6,14 @@
 - [서비스 시나리오](#서비스-시나리오)
 - [체크포인트](#체크포인트)
 - [분석/설계](#분석설계)
-- [구현:](#구현-)
+- [구현:](#구현)
+  - [Gateway 설정]
+  - [동기식 호출]
+  - [오토 스케일링]
+  - [셀프 힐링]
+  - [무정지 배포]
+  - [Config 및 PV 설정]
 - [운영](#운영)
-  - [Gateway 설정](#Gateway)
-  - [동기식 호출](#FeignClient)
-  - [오토 스케일링](#Auto-Scaling)
 
 
 # 서비스 시나리오
@@ -23,20 +26,24 @@
 
 # 체크포인트
 - [X] 이벤트 스토밍
-- [ ] 운영
-  - [ ] Gateway
-  - [ ] 동기식 호출
-  - [ ] Auto Scaling
-  - [ ] Self-healing
-  - [ ] Polyglot
+- [X] 구현
+  - [X] Gateway
+  - [X] 동기식 호출
+  - [X] Auto Scaling
+  - [X] Self-healing
+  - [X] Self-healing
+  - [X] Zero-Downtime Deploy
+  - [X] Config Map / Persistence Volume
 
 # 분석설계
 ### 이벤트 스토밍
+위 서비스 시나리오를 바탕으로 각각의 서비스에 대한 Event를 정의하고 그에 맞는 Context Bound를 설정한 결과는 다음과 같다.
 <img width="1582" alt="Screen Shot 2022-05-17 at 11 07 09 AM" src="https://user-images.githubusercontent.com/55871108/168713780-c3f5bab3-64f7-4e8e-b961-910da5f69433.png">
 
-# 운영
+# 구현
 ### Gateway
 원하는 서비스에 알맞게 할당될 수 있도록 포트를 분배
+> application.yml
 ```
 spring:
   profiles: default
@@ -67,7 +74,7 @@ spring:
 
 ### FeignClient
 
-checkSeat 부분은 반드시 확인되어야 할 절차이므로 동기식으로 호출함.
+checkSeat 부분은 위 앱의 핵심적인 기능으로서 조건 충족 여부에 따라 external 서비스인 카카오톡 메시지 서비스 작동 유무를 결정해야 함으로 Sync로 호출하기로 결정.
 ```
 @FeignClient(name="Seat", url="http://Seat:8080")
 public interface SeatService {
@@ -79,4 +86,62 @@ public interface SeatService {
 
 ### Auto Scaling
 
+### Self-Healing(Liveness Probe)
+
+Pod는 정상적으로 작동하지만 내부의 어플리케이션이 반응이 없다면, 컨테이너는 의미가 없다.
+위와 같은 경우는 어플리케이션의 Deadlock 또는 메모리 과부화로 인해 발생할 수 있으며, 발생했을 경우 컨테이너를 다시 시작해야 한다.
+Liveness probe는 Pod의 상태를 체크하다가, Pod의 상태가 비정상인 경우 kubelet을 통해서 재시작한다.
+> deployment.yml
+```
+livenessProbe:
+  httpGet:
+    path: '/actuator/health'
+    port: 8080
+  initialDelaySeconds: 120
+  timeoutSeconds: 2
+  periodSeconds: 5
+  failureThreshold: 5
+```
+
+### Zero-Downtime Deploy(Readiness Probe)
+클러스터에 배포를 할때 readinessProbe 설정이 없으면 다운타임이 존재 하게 된다. 
+이는 쿠버네티스에서 Ramped 배포 방식으로 무정지 배포를 시도 하지만, 서비스가 기동하는 시간이 있기 때문에, 기동 시간동안 장애가 발생. 
+```
+readinessProbe:
+  httpGet:
+    path: '/actuator/health'
+    port: 8080
+  initialDelaySeconds: 10
+  timeoutSeconds: 2
+  periodSeconds: 5
+  failureThreshold: 10
+```
+### Config Map / Persistence Volume
+쿠버네이트에서 mairadb 가 초기화 되지 않고 연속성이 구현 되지 위한 설정과 구현
+#### Config Map
+Deployment 설정에 직접 입력하는것은 개발자와 운영자사이에 역할이 혼재되므로, 운영자가 해당 설정 부분만을 관리할 수 있도록 별도의 Configuration 을 위한 쿠버네티스 객체인 ConfigMap (혹은 Secret)을 선언하여 연결
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-pass
+type: Opaque
+data:
+  password: YWRtaW4=
+```
+#### Persistence Volume
+Pod 사용하는 볼륨이 해당 Pod 에 기본 부착된 파일시스템이기 때문 db내용이 손실된다. 이를 해결하기 위하여 PersistenceVolume 으로 된 파일시스템에 연결하도록 설정.
+```
+spec:
+  containers:
+    volumeMounts:
+    - name: k8s-mysql-storage
+      mountPath: /var/lib/mysql
+  volumes:
+  - name: k8s-mysql-storage
+    persistentVolumeClaim:
+      claimName: "fs"
+```
+
+# 운영
 
