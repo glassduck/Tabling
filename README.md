@@ -155,6 +155,7 @@ readinessProbe:
   periodSeconds: 5
   failureThreshold: 10
 ```
+![image](https://user-images.githubusercontent.com/105638839/168957082-93334fc2-8410-4d9f-82b0-20bfeae4506d.png)
 
 ### Circuit Breaker
 isto에서 설정을통한 서킷브레이커.
