@@ -19,15 +19,7 @@ public class PolicyHandler{
     @Autowired ReceptRepository receptRepository;
     
     @StreamListener(KafkaProcessor.INPUT)
-    public void afterReceptAdded(@Payload ReceeptAdded receeptAdded){
-        system.out.println("recept Added");
-    }
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void afterReceptCanceled(@Payload ReceeptCanceled receptCanceled){
-        system.out.println("recept Canceled");
-    }
-
+    public void afterReceptAdded(){System.out.println("Recept policy handler");};
 }
 
 
