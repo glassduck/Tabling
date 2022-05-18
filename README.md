@@ -140,6 +140,7 @@ livenessProbe:
   periodSeconds: 5
   failureThreshold: 5
 ```
+![image](https://user-images.githubusercontent.com/105638839/168956964-3842d9d0-1dfb-4f6e-85f1-c72c8d97b45d.png)
 
 ### Zero-Downtime Deploy(Readiness Probe)
 클러스터에 배포를 할때 readinessProbe 설정이 없으면 다운타임이 존재 하게 된다. 
