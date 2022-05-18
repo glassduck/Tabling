@@ -7,8 +7,10 @@
 - [체크포인트](#체크포인트)
 - [분석/설계](#분석설계)
 - [구현:](#구현)
-  - [API Gateway]
-  - [동기식 호출]
+  - [SAGA Pattern]
+  - [CQRS Pattern]
+  - [Correlation / Compensation(Unique Key)]
+  - [Request / Response (Feign Client / Sync.Async)]
 - [운영](#운영)
   - [배포 환경] 
   - [오토 스케일링]
@@ -30,15 +32,19 @@
 # 체크포인트
 - [X] 이벤트 스토밍
 - [X] 구현
-  - [X] API Gateway
-  - [X] 동기식 호출
+  - [X][SAGA Pattern]
+  - [X][CQRS Pattern]
+  - [X][Correlation / Compensation(Unique Key)]
+  - [X][Request / Response (Feign Client / Sync.Async)]
 - [X] 운영
-  - [X] Deploy / Pipeline
-  - [X] Auto Scaling
-  - [X] Self-healing
-  - [X] Zero-Downtime Deploy
-  - [X] Circuit Breaker
-  - [X] Config Map / Persistence Volume
+  - [X][API Gateway]
+  - [X][Deploy / Pipeline] 
+  - [X][Circuit Breaker]
+  - [X][Autoscale(HPA)]
+  - [X][Self-Healing(Liveness Probe)]
+  - [X][Zero-Downtime Deploy(Readiness Probe)]
+  - [X][Config Map / Persistence Volume]
+  - [X][Polyglot]
 
 # 분석설계
 ### 이벤트 스토밍
