@@ -18,7 +18,9 @@ import tabling.domain.*;
 public class PolicyHandler{
     
     @StreamListener(KafkaProcessor.INPUT)
-    public void whatever(@Payload String eventString){}
+    public void afterViewing(@Payload String eventString){
+        System.out.println(eventString);
+    }
 
 
 }

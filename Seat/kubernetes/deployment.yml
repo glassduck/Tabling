@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: Seat
-          image: username/Seat:latest
+          image: glassduck/Seat:latest
           ports:
             - containerPort: 8080
           readinessProbe:

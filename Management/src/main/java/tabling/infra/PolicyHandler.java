@@ -28,15 +28,9 @@ public class PolicyHandler{
         ReceptAdded event = receptAdded;
         System.out.println("\n\n##### listener SendRecept : " + receptAdded.toJson() + "\n\n");
 
-
-        
-
         // Sample Logic //
         OrderMng.sendRecept(event);
-        
-
-        
-
+    
     }
 
     @StreamListener(KafkaProcessor.INPUT)
@@ -46,15 +40,9 @@ public class PolicyHandler{
         ReceptCanceled event = receptCanceled;
         System.out.println("\n\n##### listener CancelRecept : " + receptCanceled.toJson() + "\n\n");
 
-
-        
-
         // Sample Logic //
         OrderMng.cancelRecept(event);
         
-
-        
-
     }
 
 

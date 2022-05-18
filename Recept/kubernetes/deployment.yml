@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: Recept
-          image: username/Recept:latest
+          image: glassduck/Recept:latest
           ports:
             - containerPort: 8080
           readinessProbe:

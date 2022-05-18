@@ -14,7 +14,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: my-kafka:9092
         streams:
           binder:
             configuration:
@@ -40,26 +40,26 @@ server:
   port: 8082
 ---
 
-spring:
-  profiles: docker
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: my-kafka:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      bindings:
-        event-in:
-          group: Recept
-          destination: tabling
-          contentType: application/json
-        event-out:
-          destination: tabling
-          contentType: application/json
+# spring:
+#   profiles: default
+#   cloud:
+#     stream:
+#       kafka:
+#         binder:
+#           brokers: my-kafka:9092
+#         streams:
+#           binder:
+#             configuration:
+#               default:
+#                 key:
+#                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+#                 value:
+#                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+#       bindings:
+#         event-in:
+#           group: Recept
+#           destination: tabling
+#           contentType: application/json
+#         event-out:
+#           destination: tabling
+#           contentType: application/json

@@ -40,10 +40,10 @@ public class OrderMng  {
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
-        tabling.external.Seat seat = new tabling.external.Seat();
+        // tabling.external.Seat seat = new tabling.external.Seat();
         // mappings goes here
-        ManagementApplication.applicationContext.getBean(tabling.external.SeatService.class)
-            .checkSeat(seat);
+        // ManagementApplication.applicationContext.getBean(tabling.external.SeatService.class)
+            // .checkSeat(seat);
 
         OrderCompleted orderCompleted = new OrderCompleted();
         BeanUtils.copyProperties(this, orderCompleted);
@@ -52,10 +52,10 @@ public class OrderMng  {
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
-        tabling.external.Seat seat = new tabling.external.Seat();
+        // tabling.external.Seat seat = new tabling.external.Seat();
         // mappings goes here
-        ManagementApplication.applicationContext.getBean(tabling.external.SeatService.class)
-            .checkSeat(seat);
+        // ManagementApplication.applicationContext.getBean(tabling.external.SeatService.class)
+            // .checkSeat(seat);
 
     }
 
@@ -102,12 +102,23 @@ public class OrderMng  {
 
 
     public static OrderMngRepository repository(){
-        OrderMngRepository orderMngRepository = OrderMngApplication.applicationContext.getBean(OrderMngRepository.class);
+        OrderMngRepository orderMngRepository = ManagementApplication.applicationContext.getBean(OrderMngRepository.class);
         return orderMngRepository;
     }
 
 
     public static void cancelRecept(ReceptCanceled receptCanceled){
+
+        OrderMng orderMng = new OrderMng();
+        /*
+        LOGIC GOES HERE
+        */
+        repository().save(orderMng);
+
+
+    }
+
+        public static void sendRecept(ReceptAdded receptAdded){
 
         OrderMng orderMng = new OrderMng();
         /*

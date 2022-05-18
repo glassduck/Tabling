@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ReceptDashBoard
-          image: username/ReceptDashBoard:latest
+          image: glassduck/ReceptDashBoard:latest
           ports:
             - containerPort: 8080
           readinessProbe:
